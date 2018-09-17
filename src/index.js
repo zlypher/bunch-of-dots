@@ -1,5 +1,5 @@
 import Application from "./application";
-import "index.scss";
+import style from "./index.scss";
 
 const app = new Application();
 app.setup(window.innerWidth, window.innerHeight);
