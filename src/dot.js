@@ -5,6 +5,7 @@ export class Dot extends GameObject {
     constructor() {
         super();
         this.speed = 10.5;
+        this.waypoints = [];
         this.target = THREE.Vector3(0, 0, 0);
 
         this.geometry = new THREE.SphereGeometry( 1, 20, 20 );
@@ -14,26 +15,45 @@ export class Dot extends GameObject {
     }
 
     update(timeDelta) {
-        if (this.target) {
-            const targetPos = this.target.clone();
+        if (this.waypoints.length > 0) {
+        // if (this.target) {
+            const targetPos = this.waypoints[0].getPosition();
+            if (this.isCloseToWaypoint(targetPos)) {
+                this.removeWaypoint();
+            }
+
+            // const targetPos = this.target.clone();
             targetPos.setZ(0);
 
             const moveVec = targetPos
                 .sub(this.mesh.position)
                 .normalize();
-                // .multiplyScalar(timeDelta * this.speed);
 
-                console.log(moveVec);
-
-            // this.mesh.position.x += moveVec.x;
-            // this.mesh.position.y += moveVec.y;
-            // this.mesh.position.setY(this.mesh.position.y += moveVec.y);
             this.mesh.translateOnAxis(moveVec, timeDelta * this.speed);
         }
     }
 
+    isCloseToWaypoint(pos) {
+        const dist = this.mesh.position.distanceTo(pos);
+        return dist < 0.1;
+    }
+
+    removeWaypoint() {
+        const wp = this.waypoints.shift();
+        this.scene.remove(wp.getMesh());
+    }
+
     setTarget(targetPos) {
         this.target = targetPos;
+    }
+
+    addWaypoint(wp) {
+        this.waypoints.push(wp);
+    }
+
+    addTo(scene) {
+        this.scene = scene;
+        this.scene.add(this.mesh);
     }
 
     getMesh() {

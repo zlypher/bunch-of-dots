@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { Dot } from "./dot";
 import { debugTarget } from "./debug";
+import { Waypoint } from "./waypoint";
 
 const clickVector = new THREE.Vector3();
 const clickPos = new THREE.Vector3();
@@ -21,7 +22,7 @@ class Application {
 
         this.scene = new THREE.Scene();
         this.dots.push(new Dot());
-        this.dots.forEach(d => this.scene.add(d.getMesh()));
+        this.dots.forEach(d => d.addTo(this.scene));
 
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
         this.renderer.setSize( width, height );
@@ -69,8 +70,15 @@ class Application {
         let distance = -this.camera.position.z / clickVector.z;
         clickPos.copy(this.camera.position).add(clickVector.multiplyScalar(distance));
 
+        this.addWaypointAt(clickPos);
         debugTarget(clickPos);
-        this.dots[0].setTarget(clickPos);
+        // this.dots[0].setTarget(clickPos);
+    }
+
+    addWaypointAt(pos) {
+        const wp = new Waypoint(pos);
+        this.scene.add(wp.getMesh());
+        this.dots[0].addWaypoint(wp);
     }
 }
 
