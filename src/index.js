@@ -7,4 +7,5 @@ document.body.appendChild( app.getRenderTarget() );
 
 app.animate();
 
+window.addEventListener("resize", app.onResize.bind(app), false);
 document.addEventListener("mousedown", app.onMouseDown.bind(app), false);
