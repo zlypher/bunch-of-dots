@@ -2,6 +2,7 @@ import * as THREE from "three";
 import { Dot } from "./dot";
 import { debugTarget } from "./debug";
 import { Waypoint } from "./waypoint";
+import { randomVector3 } from "./utils";
 
 const clickVector = new THREE.Vector3();
 const clickPos = new THREE.Vector3();
@@ -21,7 +22,8 @@ class Application {
         this.camera.position.z = 50;
 
         this.scene = new THREE.Scene();
-        this.dots.push(new Dot());
+        this.dots.push(new Dot()); // main dot
+        this.dots = [...this.dots, ...this.spawnDots(10)];
         this.dots.forEach(d => d.addTo(this.scene));
 
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -79,6 +81,11 @@ class Application {
         const wp = new Waypoint(pos);
         this.scene.add(wp.getMesh());
         this.dots[0].addWaypoint(wp);
+    }
+
+    spawnDots(numberOfDots = 10) {
+        return Array.from(new Array(numberOfDots))
+            .map(i => new Dot(randomVector3()));
     }
 }
 

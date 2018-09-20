@@ -2,7 +2,7 @@ import * as THREE from "three";
 import { GameObject } from "./gameobject";
 
 export class Dot extends GameObject {
-    constructor() {
+    constructor(pos) {
         super();
         this.speed = 10.5;
         this.waypoints = [];
@@ -12,6 +12,11 @@ export class Dot extends GameObject {
         const material = new THREE.MeshNormalMaterial();
 
         this.mesh = new THREE.Mesh( this.geometry, material );
+
+        console.log(pos);
+        const posVec = pos || new THREE.Vector3(0, 0, 0);
+        console.log(posVec);
+        this.mesh.position.set(posVec.x, posVec.y, posVec.z);
     }
 
     update(timeDelta) {
