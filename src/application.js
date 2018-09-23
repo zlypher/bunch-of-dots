@@ -22,8 +22,8 @@ class Application {
         this.camera.position.z = 50;
 
         this.scene = new THREE.Scene();
-        this.dots.push(new Dot()); // main dot
-        this.dots = [...this.dots, ...this.spawnDots(10)];
+        this.dots.push(new Dot(new THREE.Vector3(0, 0, 0))); // main dot
+        // this.dots = [...this.dots, ...this.spawnDots(10)];
         this.dots.forEach(d => d.addTo(this.scene));
 
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
