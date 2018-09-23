@@ -6,9 +6,9 @@ const UP = new THREE.Vector3(0, 0, 1);
 const SPEED_MUL = 1;
 
 export class Dot extends GameObject {
-    constructor(pos) {
+    constructor(pos, conf = {}) {
         super();
-        this.speed = 10;
+        this.speed = conf.speed || 2;
         this.rotationSpeed = 10;
         this.waypoints = [];
         this.target = THREE.Vector3(0, 0, 0);

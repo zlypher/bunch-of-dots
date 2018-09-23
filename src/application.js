@@ -1,8 +1,6 @@
 import * as THREE from "three";
-import { Dot } from "./dot";
-import { debugTarget } from "./debug";
-import { Waypoint } from "./waypoint";
-import { randomVector3 } from "./utils";
+import { Player, NPC, Waypoint } from "./objects";
+import { randomVector3, debugTarget } from "./utils";
 
 const clickVector = new THREE.Vector3();
 const clickPos = new THREE.Vector3();
@@ -14,6 +12,7 @@ class Application {
         this.renderer = null;
         this.mesh = null;
         this.clock = null;
+        this.player = null;
         this.dots = [];
     }
 
@@ -22,8 +21,10 @@ class Application {
         this.camera.position.z = 50;
 
         this.scene = new THREE.Scene();
-        this.dots.push(new Dot(new THREE.Vector3(0, 0, 0))); // main dot
-        // this.dots = [...this.dots, ...this.spawnDots(10)];
+        this.player = new Player(new THREE.Vector3(0, 0, 0), { speed: 10 });
+        this.dots = this.spawnDots(10);
+
+        this.player.addTo(this.scene);
         this.dots.forEach(d => d.addTo(this.scene));
 
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -39,9 +40,11 @@ class Application {
 
     animate() {
         const timeDelta = this.clock.getDelta();
+
+        this.player.update(timeDelta);
         this.dots.forEach(d => d.update(timeDelta));
+
         requestAnimationFrame( this.animate.bind(this) );
-    
         this.renderer.render( this.scene, this.camera );
     }
 
@@ -74,18 +77,17 @@ class Application {
 
         this.addWaypointAt(clickPos);
         debugTarget(clickPos);
-        // this.dots[0].setTarget(clickPos);
     }
 
     addWaypointAt(pos) {
         const wp = new Waypoint(pos);
         this.scene.add(wp.getMesh());
-        this.dots[0].addWaypoint(wp);
+        this.player.addWaypoint(wp);
     }
 
     spawnDots(numberOfDots = 10) {
         return Array.from(new Array(numberOfDots))
-            .map(i => new Dot(randomVector3()));
+            .map(i => new NPC(randomVector3()));
     }
 }
 
