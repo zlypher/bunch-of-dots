@@ -18,13 +18,22 @@ class Application {
 
     setup(width, height) {
         this.camera = new THREE.PerspectiveCamera( 70, width / height, 0.01, 100 );
-        this.camera.position.z = 50;
+        this.camera.position.z = 30;
 
         this.scene = new THREE.Scene();
-        this.player = new Player(new THREE.Vector3(0, 0, 0), { speed: 10 });
-        this.dots = this.spawnDots(10);
+        // this.player = new Player(new THREE.Vector3(0, 0, 0), { speed: 10 });
+        this.dots = this.spawnDots(20);
+        // this.dots = [
+        //     new NPC(new THREE.Vector3(4, 0, 0), 1),
+        //     new NPC(new THREE.Vector3(-4, 0, 0)),
+        //     new NPC(new THREE.Vector3(4, 4, 0)),
+        //     new NPC(new THREE.Vector3(-4, 4, 0)),
+        //     // new NPC(new THREE.Vector3(0, 8, 0)),
+        //     // new NPC(new THREE.Vector3(11, 5, 0)),
+        //     // new NPC(new THREE.Vector3(-11, -15, 0)),
+        // ];
 
-        this.player.addTo(this.scene);
+        // this.player.addTo(this.scene);
         this.dots.forEach(d => d.addTo(this.scene));
 
         this.renderer = new THREE.WebGLRenderer( { antialias: true } );
@@ -41,8 +50,8 @@ class Application {
     animate() {
         const timeDelta = this.clock.getDelta();
 
-        this.player.update(timeDelta);
-        this.dots.forEach(d => d.update(timeDelta));
+        // this.player.update(timeDelta);
+        this.dots.forEach(d => d.update(timeDelta, this.dots));
 
         requestAnimationFrame( this.animate.bind(this) );
         this.renderer.render( this.scene, this.camera );
@@ -58,6 +67,7 @@ class Application {
     // https://stackoverflow.com/a/13091694/733368
     onMouseDown(evt) {
         evt.preventDefault();
+        return;
         let target = this.getRenderTarget();
         let pos = new THREE.Vector2();
         pos.x = (evt.clientX / target.clientWidth) * 2 - 1;
