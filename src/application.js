@@ -1,6 +1,7 @@
 import * as THREE from "three";
 import { Player, NPC, Waypoint } from "./objects";
 import { randomVector3, debugTarget } from "./utils";
+import { Grid } from "./grid";
 
 const clickVector = new THREE.Vector3();
 const clickPos = new THREE.Vector3();
@@ -32,6 +33,9 @@ class Application {
         //     // new NPC(new THREE.Vector3(11, 5, 0)),
         //     // new NPC(new THREE.Vector3(-11, -15, 0)),
         // ];
+
+        const grid = new Grid();
+        this.scene.add(grid.getMesh());
 
         // this.player.addTo(this.scene);
         this.dots.forEach(d => d.addTo(this.scene));
