@@ -25,7 +25,7 @@ class Application {
         // this.player = new Player(new THREE.Vector3(0, 0, 0), { speed: 10 });
         this.dots = this.spawnDots(20);
         // this.dots = [
-        //     new NPC(new THREE.Vector3(4, 0, 0), 1),
+        //     new NPC(new THREE.Vector3(4, 0, 0)),
         //     new NPC(new THREE.Vector3(-4, 0, 0)),
         //     new NPC(new THREE.Vector3(4, 4, 0)),
         //     new NPC(new THREE.Vector3(-4, 4, 0)),
@@ -101,7 +101,7 @@ class Application {
 
     spawnDots(numberOfDots = 10) {
         return Array.from(new Array(numberOfDots))
-            .map(i => new NPC(randomVector3()));
+            .map(i => new NPC(randomVector3(20)));
     }
 }
 

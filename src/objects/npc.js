@@ -2,10 +2,12 @@ import * as THREE from "three";
 import { randomVector3 } from "../utils";
 
 const FACTORS = {
-    alignment: 0.01,
+    alignment: 0.75,
     cohesion: 1,
-    separation: 1,
+    separation: 0.7,
 };
+
+const DIMENSION = 20;
 
 const FORWARD = new THREE.Vector3(0, 1, 0);
 
@@ -17,7 +19,9 @@ export class NPC {
         this.mesh = new THREE.Mesh();
         this.mesh.add(this.sprite);
 
-        this.speed = 0.01 * mul;
+        this.speed = 0.1 * mul;
+        this.dummy = true;
+        // setTimeout(() => this.dummy = true, 3000);
         this.position = pos || new THREE.Vector3(0, 0, 0);
         this.velocity = randomVector3(1).normalize();
         this.acceleration = new THREE.Vector3(0, 0, 0);
@@ -29,18 +33,31 @@ export class NPC {
             return;
         }
 
-        this.calculateFlockingBehaviour(neighbors);
-        // this.acceleration.normalize().multiplyScalar(this.speed * timeDelta * 0.00001);
+        if (this.dummy) {
+            this.calculateFlockingBehaviour(neighbors);
+        }
 
         this.velocity.add(this.acceleration);
         this.velocity.normalize().multiplyScalar(this.speed);
         this.position.add(this.velocity);
+        this.position = this.wrapAround();
+
         this.mesh.position.set(this.position.x, this.position.y, this.position.z);
 
         this.lookTo(this.velocity);
 
         // Reset acceleration
         this.acceleration.multiplyScalar(0);
+    }
+
+    wrapAround() {
+        const pos = this.getPosition();
+        if (pos.x < -DIMENSION) pos.x = DIMENSION;
+        if (pos.y < -DIMENSION) pos.y = DIMENSION;
+        if (pos.x > DIMENSION) pos.x = -DIMENSION;
+        if (pos.y > DIMENSION) pos.y = -DIMENSION;
+
+        return pos;
     }
 
     lookTo(direction) {
