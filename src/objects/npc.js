@@ -1,13 +1,19 @@
 import * as THREE from "three";
 import { randomVector3 } from "../utils";
 
+// const FACTORS = {
+//     alignment: 1.25,
+//     cohesion: 1,
+//     separation: 1.5,
+// };
+
 const FACTORS = {
-    alignment: 0.75,
+    alignment: 1,
     cohesion: 1,
-    separation: 0.7,
+    separation: 1.5,
 };
 
-const DIMENSION = 20;
+const DIMENSION = 30;
 
 const FORWARD = new THREE.Vector3(0, 1, 0);
 
@@ -19,7 +25,8 @@ export class NPC {
         this.mesh = new THREE.Mesh();
         this.mesh.add(this.sprite);
 
-        this.speed = 0.1 * mul;
+        this.speed = 0.1;
+        this.force = 0.03;
         this.dummy = true;
         // setTimeout(() => this.dummy = true, 3000);
         this.position = pos || new THREE.Vector3(0, 0, 0);
@@ -38,7 +45,8 @@ export class NPC {
         }
 
         this.velocity.add(this.acceleration);
-        this.velocity.normalize().multiplyScalar(this.speed);
+        this.velocity.clampLength(0, this.speed);
+        // this.velocity.normalize().multiplyScalar(this.speed);
         this.position.add(this.velocity);
         this.position = this.wrapAround();
 
@@ -110,9 +118,29 @@ export class NPC {
             (acc, curr) => acc.add(curr.dot.getVelocity()),
             new THREE.Vector3(0, 0, 0));
 
-        return sum
+        // return sum
+        //     .divideScalar(neighbors.length)
+        //     .normalize();
+        
+        const result = sum
             .divideScalar(neighbors.length)
-            .normalize();
+            .normalize()
+            .multiplyScalar(this.speed)
+            .sub(this.getVelocity())
+            .clampLength(0, this.force);
+
+        return result;
+    }
+
+    testSeek(target) {
+        const desired = target
+            .sub(this.getPosition())
+            .normalize()
+            .multiplyScalar(this.speed);
+
+        const steer = desired.sub(this.getVelocity());
+        steer.clampLength(0, this.force);
+        return steer;
     }
 
     calculateCohesion(neighbors) {
@@ -124,10 +152,14 @@ export class NPC {
             (acc, curr) => acc.add(curr.dot.getPosition()),
             new THREE.Vector3(0, 0, 0));
 
-        return sum
-            .divideScalar(neighbors.length)
-            .sub(this.position)
-            .normalize();
+        const result = this.testSeek(sum.divideScalar(neighbors.length).clone());
+
+        // return sum
+        //     .divideScalar(neighbors.length)
+        //     .sub(this.position)
+        //     .normalize();
+
+        return result;
     }
 
     calculateSeparation(neighbors) {
@@ -135,16 +167,33 @@ export class NPC {
             return new THREE.Vector3(0, 0, 0);
         }
 
+        const separationDistance = 4;
         const sum = neighbors
-            // .filter(curr => curr.distance < 10)
+            .filter(curr => curr.distance < separationDistance)
             .reduce(
-                (acc, curr) => acc.add(curr.dot.getPosition().sub(this.position)),
+                (acc, curr) => {
+                    let diff = this.getPosition().sub(curr.dot.getPosition());
+                    diff = diff.normalize().divideScalar(curr.distance);
+                    return acc.add(diff);
+                },
+                // (acc, curr) => acc.add(curr.dot.getPosition().sub(this.position)),
                 new THREE.Vector3(0, 0, 0));
 
-        return sum
-            .divideScalar(neighbors.length)
-            .negate()
-            .normalize();
+        let result = sum.divideScalar(neighbors.length);
+
+        if (result.length() > 0) {
+            return result
+                .normalize()
+                .multiplyScalar(this.speed)
+                .sub(this.getVelocity())
+                .clampLength(0, this.force);
+        }
+
+        return result;
+        // return sum
+        //     .divideScalar(neighbors.length)
+        //     .negate()
+        //     .normalize();
     }
 
     applyForce(force, factor) {

@@ -19,11 +19,11 @@ class Application {
 
     setup(width, height) {
         this.camera = new THREE.PerspectiveCamera( 70, width / height, 0.01, 100 );
-        this.camera.position.z = 30;
+        this.camera.position.z = 50;
 
         this.scene = new THREE.Scene();
         // this.player = new Player(new THREE.Vector3(0, 0, 0), { speed: 10 });
-        this.dots = this.spawnDots(20);
+        this.dots = this.spawnDots(100);
         // this.dots = [
         //     new NPC(new THREE.Vector3(4, 0, 0)),
         //     new NPC(new THREE.Vector3(-4, 0, 0)),
@@ -101,7 +101,7 @@ class Application {
 
     spawnDots(numberOfDots = 10) {
         return Array.from(new Array(numberOfDots))
-            .map(i => new NPC(randomVector3(20)));
+            .map(i => new NPC(randomVector3(60)));
     }
 }
 

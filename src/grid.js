@@ -12,14 +12,18 @@ export class Grid {
         const material = new THREE.LineBasicMaterial({ color: 0x0000ff });
 
         this.line = new THREE.Line( this.geometry, material );
+        this.line.add(this.addXSubline(-30));
         this.line.add(this.addXSubline(-20));
         this.line.add(this.addXSubline(-10));
         this.line.add(this.addXSubline(10));
         this.line.add(this.addXSubline(20));
+        this.line.add(this.addXSubline(30));
+        this.line.add(this.addYSubline(-30));
         this.line.add(this.addYSubline(-20));
         this.line.add(this.addYSubline(-10));
         this.line.add(this.addYSubline(10));
         this.line.add(this.addYSubline(20));
+        this.line.add(this.addYSubline(30));
     }
 
     addXSubline(x) {
